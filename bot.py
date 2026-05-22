@@ -10,8 +10,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
-PDF_URL = "https://example.com/style-guide.pdf"  # Замените на свою реальную ссылку
-
+PDF_URL = "https://example.com/style-guide.pdf"
 
 QUESTIONS = [
     {
@@ -22,7 +21,70 @@ QUESTIONS = [
             ("🌿 Свободный, удобный, без лишнего", "casual"),
         ],
     },
-    # ... остальные вопросы (по образцу) ...
+    {
+        "text": "Вопрос 2 из 10 👠\n\nКакая обувь чаще всего на твоих ногах?",
+        "options": [
+            ("👠 Каблук или лодочки", "klassika"),
+            ("🌸 Балетки или мюли", "romantika"),
+            ("👟 Кеды или лоферы", "casual"),
+        ],
+    },
+    {
+        "text": "Вопрос 3 из 10 🎨\n\nКакие цвета преобладают в твоём гардеробе?",
+        "options": [
+            ("🖤 Чёрный, белый, бежевый, серый", "klassika"),
+            ("🌸 Пудровый, розовый, лавандовый", "romantika"),
+            ("🌿 Джинсовый, хаки, терракота", "casual"),
+        ],
+    },
+    {
+        "text": "Вопрос 4 из 10 👜\n\nКакую сумку ты чаще выбираешь?",
+        "options": [
+            ("💼 Структурированная классическая сумка", "klassika"),
+            ("👛 Маленькая сумочка-клатч или мини", "romantika"),
+            ("🎒 Тоут, шоппер или рюкзак", "casual"),
+        ],
+    },
+    {
+        "text": "Вопрос 5 из 10 💄\n\nКакой макияж тебе ближе всего?",
+        "options": [
+            ("✨ Чёткий, сдержанный, стрелки или нюд", "klassika"),
+            ("🌸 Нежный, с румянами и блеском", "romantika"),
+            ("🌿 Минимальный или вообще без макияжа", "casual"),
+        ],
+    },
+    {
+        "text": "Вопрос 6 из 10 🌟\n\nКак ты относишься к украшениям?",
+        "options": [
+            ("💎 Классика — жемчуг, золото, минимализм", "klassika"),
+            ("🌸 Обожаю! Серьги, кольца, слои", "romantika"),
+            ("🌿 Редко ношу или только одно украшение", "casual"),
+        ],
+    },
+    {
+        "text": "Вопрос 7 из 10 🛍️\n\nКак ты выбираешь одежду в магазине?",
+        "options": [
+            ("👔 Ищу качественные базовые вещи", "klassika"),
+            ("🌸 Привлекают детали — кружево, принты, рюши", "romantika"),
+            ("🌿 Главное — удобно и можно носить каждый день", "casual"),
+        ],
+    },
+    {
+        "text": "Вопрос 8 из 10 🌍\n\nКуда ты идёшь — как одеваешься?",
+        "options": [
+            ("👔 Всегда выгляжу собранно и аккуратно", "klassika"),
+            ("🌸 Стараюсь выглядеть женственно даже в будни", "romantika"),
+            ("🌿 Удобно и стильно — это моё правило", "casual"),
+        ],
+    },
+    {
+        "text": "Вопрос 9 из 10 💭\n\nКакой образ тебя вдохновляет больше всего?",
+        "options": [
+            ("👑 Элегантная бизнес-леди или француженка", "klassika"),
+            ("🌸 Нежная героиня романтического фильма", "romantika"),
+            ("🌿 Стильная девушка с улицы Нью-Йорка", "casual"),
+        ],
+    },
     {
         "text": "Вопрос 10 из 10 🌟\n\nПоследний 🌸\n\nЧто чаще всего говорят о твоём стиле подруги или близкие?",
         "options": [
@@ -33,10 +95,12 @@ QUESTIONS = [
     },
 ]
 
+
 def make_score_bar(score: int, total: int = 10) -> str:
     filled = round((score / total) * 10) if total else 0
     empty = 10 - filled
     return "█" * filled + "░" * empty
+
 
 def get_result_text(scores: dict) -> str:
     klassika = scores.get("klassika", 0)
@@ -158,12 +222,14 @@ def get_result_text(scores: dict) -> str:
             f"🌿 Casual:    {bar_c}"
         )
 
+
 def main_menu_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("👗 Да, хочу узнать свой стиль!", callback_data="start_test")],
         [InlineKeyboardButton("📥 Сначала получить PDF бесплатно", callback_data="get_pdf")],
         [InlineKeyboardButton("💬 Написать Марте напрямую", callback_data="contact")],
     ])
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
@@ -176,6 +242,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Готова?"
     )
     await update.message.reply_text(text, reply_markup=main_menu_keyboard())
+
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -288,8 +355,10 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Поехали!",
             reply_markup=keyboard,
         )
+
     else:
         await query.answer("Я не понимаю эту команду.", show_alert=True)
+
 
 async def send_question(query, context: ContextTypes.DEFAULT_TYPE):
     q_index = context.user_data.get("question", 0)
@@ -300,6 +369,7 @@ async def send_question(query, context: ContextTypes.DEFAULT_TYPE):
     ]
     keyboard = InlineKeyboardMarkup(buttons)
     await query.edit_message_text(question["text"], reply_markup=keyboard)
+
 
 async def show_result(query, context: ContextTypes.DEFAULT_TYPE):
     scores = context.user_data.get("scores", {})
@@ -313,6 +383,7 @@ async def show_result(query, context: ContextTypes.DEFAULT_TYPE):
     ])
     await query.edit_message_text(result_text, reply_markup=keyboard)
 
+
 def main():
     if not BOT_TOKEN:
         raise ValueError("BOT_TOKEN не задан! Добавь его в переменные окружения.")
@@ -321,6 +392,7 @@ def main():
     app.add_handler(CallbackQueryHandler(button_handler))
     logger.info("Бот запущен...")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
+
 
 if __name__ == "__main__":
     main()
