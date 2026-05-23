@@ -10,7 +10,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
-PDF_URL = "https://example.com/style-guide.pdf"
+PDF_URL = "https://raw.githubusercontent.com/Nikol021/style-bot/main/style.pdf"
 
 QUESTIONS = [
     {
