@@ -1,7 +1,3 @@
-Вот полный чистый код — просто скопируй и вставь целиком:
-
-Python
-
 import logging
 import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
