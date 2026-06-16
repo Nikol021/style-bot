@@ -1,3 +1,7 @@
+Вот полный чистый код — просто скопируй и вставь целиком:
+
+Python
+
 import logging
 import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
@@ -244,6 +248,29 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text, reply_markup=main_menu_keyboard())
 
 
+async def send_question(query, context: ContextTypes.DEFAULT_TYPE):
+    q_index = context.user_data.get("question", 0)
+    question = QUESTIONS[q_index]
+    buttons = [
+        [InlineKeyboardButton(label, callback_data=f"answer_{style}")]
+        for label, style in question["options"]
+    ]
+    keyboard = InlineKeyboardMarkup(buttons)
+    await query.edit_message_text(question["text"], reply_markup=keyboard)
+
+
+async def show_result(query, context: ContextTypes.DEFAULT_TYPE):
+    scores = context.user_data.get("scores", {})
+    await query.edit_message_text("Секунду... ⏳\n\nСчитаю твои результаты 🌸")
+    result_text = get_result_text(scores)
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("💬 Записаться на разбор", callback_data="book_session")],
+        [InlineKeyboardButton("🔄 Пройти тест заново", callback_data="restart_test")],
+        [InlineKeyboardButton("🏠 Главное меню", callback_data="main_menu")],
+    ])
+    await query.edit_message_text(result_text, reply_markup=keyboard)
+
+
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -358,30 +385,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     else:
         await query.answer("Я не понимаю эту команду.", show_alert=True)
-
-
-async def send_question(query, context: ContextTypes.DEFAULT_TYPE):
-    q_index = context.user_data.get("question", 0)
-    question = QUESTIONS[q_index]
-    buttons = [
-        [InlineKeyboardButton(label, callback_data=f"answer_{style}")]
-        for label, style in question["options"]
-    ]
-    keyboard = InlineKeyboardMarkup(buttons)
-    await query.edit_message_text(question["text"], reply_markup=keyboard)
-
-
-async def show_result(query, context: ContextTypes.DEFAULT_TYPE):
-    scores = context.user_data.get("scores", {})
-    await query.edit_message_text("Секунду... ⏳\n\nСчитаю твои результаты 🌸")
-
-    result_text = get_result_text(scores)
-    keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("💬 Записаться на разбор", callback_data="book_session")],
-        [InlineKeyboardButton("🔄 Пройти тест заново", callback_data="restart_test")],
-        [InlineKeyboardButton("🏠 Главное меню", callback_data="main_menu")],
-    ])
-    await query.edit_message_text(result_text, reply_markup=keyboard)
 
 
 def main():
