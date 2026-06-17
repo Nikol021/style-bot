@@ -285,14 +285,22 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text(text, reply_markup=main_menu_keyboard())
 
     elif data == "get_pdf":
-        keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton("📥 Скачать PDF", url=PDF_URL)],
-            [InlineKeyboardButton("👗 Пройти тест прямо сейчас", callback_data="start_test")],
-        ])
         await query.edit_message_text(
             "Держи! 🎁\n\n"
-            "Это PDF с подробным описанием 3 основных стилей.\n"
-            "⬇️ Скачай и возвращайся — пройдём тест вместе:",
+            "Отправляю PDF прямо сейчас... ⏳"
+        )
+        await context.bot.send_document(
+            chat_id=query.message.chat_id,
+            document=PDF_URL,
+            filename="style_guide.pdf",
+            caption="📖 Гайд по стилям от Marta Franz 🌸"
+        )
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("👗 Пройти тест прямо сейчас", callback_data="start_test")],
+        ])
+        await context.bot.send_message(
+            chat_id=query.message.chat_id,
+            text="⬆️ Скачай гайд и возвращайся — пройдём тест вместе!",
             reply_markup=keyboard,
         )
 
